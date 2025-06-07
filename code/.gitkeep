@@ -1,1 +1,76 @@
 
+# analysis_bulk_NaCl.R
+# Selected components of bulk RNA-seq analysis in NaCl-stimulated neutrophils
+
+# -------------------------------------
+# Load packages
+# -------------------------------------
+library(DESeq2)
+library(EnhancedVolcano)
+library(fgsea)
+library(viridis)
+library(ggplot2)
+library(dplyr)
+
+# -------------------------------------
+# Volcano plot
+# -------------------------------------
+
+# Load results table (analyzed separately)
+results_df <- read.csv("results/na_vs_control_results.csv", row.names = 1)
+
+# Volcano
+EnhancedVolcano(
+  results_df,
+  lab = rownames(results_df),
+  x = "log2FoldChange",
+  y = "padj",
+  xlim = c(-10, 10),
+  pCutoff = 0.1,
+  FCcutoff = 0.58,
+  title = "NaCl vs Control – Human Neutrophils",
+  xlab = bquote(~Log[2]~ 'Fold Change'),
+  colCustom = c("Upregulated" = viridis(3)[1],
+                "Downregulated" = viridis(3)[2],
+                "NS" = viridis(3)[3])[results_df$category],
+  drawConnectors = FALSE,
+  max.overlaps = 100
+)
+
+# -------------------------------------
+# GSEA plot
+# -------------------------------------
+
+# Load pre-ranked vector of fold changes
+gene_stats <- results_df$log2FoldChange
+names(gene_stats) <- rownames(results_df)
+gene_stats <- sort(na.omit(gene_stats), decreasing = TRUE)
+
+# Load curated KEGG pathways (not included)
+pathways_kegg <- read.csv("path_to/Curated.Pathways.KEGG.csv", sep = ";")
+
+# Run GSEA
+fgsea_res <- fgseaMultilevel(
+  pathways = pathways_kegg,
+  stats = gene_stats,
+  minSize = 15,
+  maxSize = 500
+)
+
+# Select top up/down pathways
+top_up <- fgsea_res %>% filter(ES > 0) %>% top_n(15, wt = -pval)
+top_down <- fgsea_res %>% filter(ES < 0) %>% top_n(15, wt = -pval)
+top_pathways <- bind_rows(top_up, top_down) %>% arrange(-ES)
+
+# Plot
+gsea_plot <- ggplot(top_pathways) +
+  aes(y = reorder(pathway, NES), x = NES, fill = pval) +
+  geom_col(position = "dodge", color = 'black') +
+  scale_fill_viridis(option = "D", direction = -1) +
+  labs(title = 'GSEA: NaCl vs Control') +
+  theme_minimal() +
+  theme(axis.text.y = element_text(size = 8, color = 'black'))
+
+ggsave("figures/gsea_barplot.png", gsea_plot, height = 5, width = 10)
+
+
