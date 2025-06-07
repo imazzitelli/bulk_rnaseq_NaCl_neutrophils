@@ -41,8 +41,15 @@ This repository contains selected code and visualizations from a bulk RNA-seq pr
 
 - `/code`: Partial scripts used for analysis and plotting  
 - `/figures`: Final visualizations (non-reproducible for now)  
-- `/results`: (Optional) Summary tables of top DEGs  
-- `/data`: Not included due to confidentiality
+
+
+---
+
+## 🧾 Conclusion
+
+This preliminary analysis allowed us to explore how exposure to high extracellular NaCl reprograms the transcriptional landscape of human neutrophils. Through differential gene expression, enrichment analyses, and visualization, we identified key pathways related to inflammation, immune regulation, and potential links to cancer biology.
+
+These results lay the foundation for further investigation of salt-induced neutrophil plasticity and its relevance in chronic inflammatory conditions and the tumor microenvironment.
 
 ---
 
