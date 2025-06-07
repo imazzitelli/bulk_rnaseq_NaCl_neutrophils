@@ -33,7 +33,7 @@ This repository contains selected code and visualizations from a bulk RNA-seq pr
 
 ### GSEA Barplot
 *(Top 30 enriched KEGG pathways sorted by Normalized Enrichment Score)*  
-![GSEA Plot](figures/na.vs.control.GSEA.BAR.PLOT.png)
+![GSEA Plot](figures/gsea_barplot.png)
 
 ---
 
